@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:amq="http://activemq.apache.org/schema/core"
+	xmlns:jms="http://www.springframework.org/schema/jms"
+	xsi:schemaLocation="http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+	
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<mvc:annotation-driven />
+	
+	
+	<mvc:resources mapping="/resources/**" location="/resources/" />
+	
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property ref="dataSource" name="dataSource"/>
+	</bean>
+	
+<!-- 	amq 네임스페이스를 등록하지 않았을때 일반적인 방법으로 빈을 등록 -->
+<!-- 	<bean id="connectionFactory" class="org.apache.activemq.spring.
+ActiveMQConnectionFactory"> -->
+<!-- 		<property name="brokerURL" value="tcp://localhost:61616"/> -->
+<!-- 	</bean> -->
+
+	<amq:connectionFactory id="connectionFactory"  
+	brokerURL="tcp://localhost:61616" trustAllPackages="true"/>
+	
+	<!-- 	amq 네임스페이스를 등록하지 않았을때 일반적인 방법으로 빈을 등록 -->
+<!-- 	<bean id="queue" class="org.apache.activemq.command.
+ActiveMQQueue"> -->
+<!-- 		<constructor-arg value="bbs.pknu" /> -->
+<!-- 	</bean> -->
+
+	<amq:queue id="queue" physicalName="bbs.pknu"/>
+	
+	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+	  <property name="connectionFactory" ref="connectionFactory" />
+	  <property name="defaultDestinationName" value="bbs.pknu" />
+	</bean>
+	
+	<bean id="senderJms" class="com.pknu.msg.util.SenderJms"/>
+	
+	<bean id="receiverJms1" class="com.pknu.msg.util.ReceiverJms1" />
+	
+	<jms:listener-container connection-factory="connectionFactory" >		
+		<jms:listener destination="bbs.pknu" ref="receiverJms1"/>
+	</jms:listener-container>		
+	
+<!-- 	<bean id="receiverJms" class="com.pknu.jms.ReceiverJms" /> -->
+	
+<!-- 	<jms:listener-container connection-factory="connectionFactory" >		 -->
+<!-- 		<jms:listener destination="bbs.pknu" ref="receiverJms" method="receiveJms"/> -->
+<!-- 	</jms:listener-container> -->
+	
+	
+	
+	
+	
+	
+
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
+	<mvc:resources mapping="/resources/**" location="/resources/" />
+	
+	<bean class="org.springframework.web.servlet.view.BeanNameViewResolver"/>	
+
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/views/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+	
+	<context:component-scan base-package="com.pknu.msg" />
+	
+	
+	
+</beans>

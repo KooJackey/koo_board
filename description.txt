@@ -1,0 +1,5 @@
+이 프로젝트는
+1. 게시판 글쓰기시 파일 업로드를 ContentDto를 통해서 조인을 했음. fileDto를 따로 안만듦
+2. Mybatis 연결 시 MapperFactoryBean 이용
+3. 파일 다운로드시 AbstactView 사용
+4. comment는 없다.

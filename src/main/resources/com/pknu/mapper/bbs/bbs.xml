@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+              "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+
+<!-- 	BBSDao 맵핑 -->
+<mapper namespace="com.pknu.bbs.dao.BBSDao">
+<!-- 		id는 메소드 이름과 같다 -->
+	<select id="getArticleCount" resultType="int">
+		SELECT COUNT(*) FROM bbs2
+	</select>	
+	
+<!-- 	<select id="getArticles"  parameterType="HashMap"  resultType="article"> -->
+<!-- 		SELECT articleNum,id,title,depth,hit,fileStatus,to_char(writeDate, 'YYYY-MM-DD') writeDate  -->
+<!-- 		FROM (SELECT ROWNUM RM, human.* FROM  -->
+<!-- 					(SELECT * FROM  bbs2  -->
+<!-- 							 ORDER BY groupId desc ) human)  -->
+<!-- 		WHERE RM BETWEEN #{startRow} AND #{endRow} -->
+		
+<!-- 	</select> -->
+
+
+
+	
+<!-- 	계층형 쿼리 -->
+	<select id="getArticles"  parameterType="com.pknu.bbs.dto.QueryDto"  resultType="article">
+		SELECT articleNum,id,title,depth,hit,fileStatus,to_char(writeDate, 'YYYY-MM-DD') writeDate, good 
+		FROM (SELECT ROWNUM RM, human.* FROM 
+					(SELECT * FROM  
+					<if test="table=='bbs2'">
+					bbs2
+					</if>
+					<if test="table=='study'">
+					study
+					</if>
+							 START WITH groupId = 0
+							 CONNECT BY PRIOR articleNum = groupId
+							 ORDER SIBLINGS BY articleNum DESC) human) 
+		WHERE RM BETWEEN #{startRow} AND #{endRow}
+	</select>
+	
+	<select id="loginCheck" parameterType="String" resultType="String">
+	SELECT PASS FROM MEMBER WHERE ID=#{id}
+	</select>
+	
+	<select id="getArticle" parameterType="int" resultType="article">
+	SELECT * FROM bbs2 WHERE articleNum=#{articleNum}
+	</select>
+	
+	<select id="getFiles" parameterType="Integer" resultType="fileDto">
+	select STOREDFNAME
+	from FILELIST2 
+	where articleNum=#{articleNum}
+	</select>
+	
+	<select id="getNextArticleNum" resultType="int">
+	SELECT	bbs_seq2.nextval FROM dual
+	</select>
+
+<!-- 	글 쓰기는 if문으로. else는 없음 -->
+	<insert id="insertArticle" parameterType="article">
+		INSERT INTO bbs2 values(
+		<if test="articleNum ==0">
+			bbs_seq2.nextval
+		</if>
+		<if test="articleNum !=0">
+			#{articleNum}
+		</if>		
+			,#{id},#{title},#{content},0,0,0				
+			,sysdate,#{fileStatus},0)
+
+	</insert>
+	
+<!-- 	파일 업로드 -->
+	<insert id="insertFile" parameterType="fileDto">
+		INSERT INTO filelist2 
+		values(	#{storedFname},#{articleNum},sysdate)
+	</insert>
+	
+<!-- 	글삭기, 파일삭기 -->
+	<update id="deleteArticle" parameterType="int">
+	DELETE FROM bbs2 WHERE ARTICLENUM=#{articleNum}
+	</update>
+	
+	
+<!-- 	수정 -->
+<!-- 	<select id="updateForm" parameterType="int" resultType="contentArticle"> -->
+<!-- 	SELECT TITLE,CONTENT FROM BBS WHERE ARTICLENUM=#{articleNum} -->
+<!-- 	</select> -->
+	
+<!-- 	<select id="updateFormFile" parameterType="int" resultType="contentArticle"> -->
+<!-- 	SELECT b.title,b.content,f.originFname  -->
+<!-- 	FROM bbs b, filelist f  -->
+<!-- 	WHERE b.articleNum=#{articleNum} and b.articleNum=f.articleNum -->
+<!-- 	</select> -->
+	
+<!-- 	답변같은 답글 - 먼저 본 게시물의 groupid가 필요하고, pos를 1 올림 -->
+<!-- 	<update id="replyPos" parameterType="article"> -->
+<!-- 	UPDATE BBS -->
+<!-- 	SET POS=POS+1 -->
+<!-- 	WHERE groupId = #{groupId} and pos > #{pos} -->
+<!-- 	</update> -->
+	
+	<insert id="replyArticle" parameterType="article">
+	INSERT INTO bbs2 values(
+	<!-- 파일 업로드가 없을시 -->
+	<if test="articleNum ==0"> 
+		bbs_seq2.nextval 
+	</if>
+	<if test="articleNum !=0"> 
+		#{articleNum} 
+	</if>
+		,#{id},#{title},#{content},#{depth}+1,0,#{groupId}
+		,sysdate,#{fileStatus},0)
+	</insert>
+	
+	<select id="getUpdateArticle" parameterType="int" resultType="article">
+		SELECT TITLE,CONTENT 
+		FROM bbs2
+		WHERE ARTICLENUM=#{articleNum}
+	</select>
+	
+	<update id="updateArticle" parameterType="article">
+		update bbs2
+		set title=#{title}, content=#{content}, fileStatus=#{fileStatus}
+		where articleNum=#{articleNum}
+	</update>
+	
+	<select id="getFileListCount" parameterType="int" resultType="int">
+	     select count(*)
+	     from FILELIST2
+	     where articleNum=#{articleNum}
+	</select>
+	
+	<delete id="updateAllDelFile" parameterType="int">
+		delete
+		from FILELIST2
+		where articleNum=#{articleNum}
+	</delete>
+	
+	<select id="updateSomeDelFile" parameterType="int" resultType="String">
+		select storedFname
+		from FILELIST2
+		where fileNum=#{fileNum}
+	</select>
+	
+	<select id="getCommentCount" parameterType="int" resultType="int">
+	SELECT COUNT(*)
+	FROM COMMENTS1
+	WHERE ARTICLENUM=#{articleNum}
+	</select>
+	
+	<delete id="someDelFile" parameterType="List">
+		delete 
+		from FILELIST2 
+		where fileNum IN
+		<foreach collection="list" item="fileNum" open="(" 
+		separator="," close=")">
+			#{fileNum}
+		</foreach>
+	</delete>
+	
+	<select id="delFile" parameterType="int" resultType="String">
+		SELECT STOREDFNAME 
+		FROM FILELIST2 
+		WHERE ARTICLENUM=#{articleNum}
+	</select>
+
+	
+	<!-- 	가입 -->
+	<insert id="join" parameterType="member">
+	INSERT INTO MEMBER values(#{id}, #{pass}, #{name}, #{email}, #{birth}, sysdate, #{memo}, #{nickname}, #{phonenumber}, null)
+	</insert>
+	
+	<!-- 	조회수 -->
+	<update id="hitUp" parameterType="int">
+	UPDATE bbs2
+	SET HIT=HIT+1 
+	WHERE articleNum=#{articleNum}
+	</update>
+	
+	<!-- 	추천+1 -->
+	<update id="good" parameterType="int">
+	UPDATE bbs2
+	SET GOOD=GOOD+1 
+	WHERE articleNum=#{articleNum}
+	</update>
+	
+	<select id="selectId" parameterType="string" resultType="string">
+		SELECT id
+		FROM MEMBER
+		WHERE ID = #{inputId}
+	</select>
+	
+	<select id="userProfile" parameterType="String" resultType="member">
+		SELECT *
+		FROM MEMBER
+		WHERE ID=#{id}
+	</select>
+	
+	<update id="userProfileUpdate" parameterType="member">
+		UPDATE MEMBER
+		SET PASS=#{pass},
+			email=#{email},
+			memo=#{memo},
+			nickname=#{nickname},
+			birth=#{birth},
+			phonenumber=#{phonenumber},
+			picture=#{picture}
+		WHERE ID=#{id}
+	</update>
+	
+</mapper>

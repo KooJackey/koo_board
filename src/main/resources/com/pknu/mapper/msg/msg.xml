@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+              "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pknu.msg.dao.MsgDao">
+
+	<!-- 아이디 읽어옴잼 -->
+	<select id="requestID" resultType="article">
+		SELECT ID
+		FROM LOGIN
+	</select>
+
+	<!-- 쪽지 보낸거 넣음 -->
+	<insert id="insertMsg" parameterType="jv">
+		INSERT INTO MESSAGE
+		VALUES(MSG_SEQ.NEXTVAL, #{pubID}, #{subID}, #{msg}, 0, sysdate)
+	</insert>
+
+	<!-- 받은 메일 받아옴 -->
+	<select id="getSubMsg" parameterType="String" resultType="jv">
+		SELECT
+		MSGNO, PUBID, SUBID, MSG, READSTATUS, MSGDATE
+		FROM MESSAGE
+		WHERE SUBID=#{ID}
+	</select>
+
+	<!-- 보낸 메일 받아옴 -->
+	<select id="getPubMsg" parameterType="String" resultType="jv">
+		SELECT
+		MSGNO, PUBID, SUBID, MSG, READSTATUS, MSGDATE
+		FROM MESSAGE
+		WHERE PUBID=#{ID}
+<!-- 		ORDER BY -->
+<!-- 		MSGNO DESC -->
+	</select>
+	
+	<delete id="deleteMsg" parameterType="int">
+		DELETE FROM MESSAGE
+		WHERE MSGNO=#{msgNo}
+	</delete>
+	
+</mapper>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:amq="http://activemq.apache.org/schema/core"
+	xmlns:jms="http://www.springframework.org/schema/jms"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+		">
+
+	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+	
+	<!-- Enables the Spring MVC @Controller programming model -->
+<!-- 	루트에서 스캔할려면 서블릿에서는 막아야함 -->
+	<mvc:annotation-driven />
+	<aop:aspectj-autoproxy></aop:aspectj-autoproxy>
+<!-- 	트랜잭션 처리를 위해 필요. @Transactional 사용 -->
+	<tx:annotation-driven/>
+	
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property ref="dataSource" name="dataSource"/>
+	</bean>
+	
+	<mvc:resources mapping="/resources/**" location="/resources/" />
+	
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" >
+		<property value="100000000" name="maxUploadSize"/>
+	</bean>	
+	
+	<bean id="saveDir" class="java.lang.String">
+		<constructor-arg value="d:\upload\"/>
+	</bean>
+
+	<bean class="org.springframework.web.servlet.view.BeanNameViewResolver"/>	
+	
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/views/" />
+		<property name="suffix" value=".jsp" />
+<!-- 		<property name="order" value="1"/> -->
+	</bean>
+	
+<!-- 	autowire bean -->
+	<context:component-scan base-package="com.pknu.bbs" />
+	
+</beans>

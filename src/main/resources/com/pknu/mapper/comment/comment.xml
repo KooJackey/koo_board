@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+              "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+
+<mapper namespace="com.pknu.comment.dao.CommentDao">
+	
+	<insert id="commentWrite" parameterType="comment">
+	INSERT INTO COMMENTS1
+	VALUES(COMMENT_SEQ1.NEXTVAL, #{id}, #{commentContent}, sysdate, #{articleNum})
+	</insert>
+	
+	<select id="commentRead" parameterType="HashMap" resultType="comment">
+	 select * 
+	 from (select rownum rm, human.* 
+	 	   from (select * 
+	 	   	 	 from comments1 
+	 	   	 	 where articleNum=#{articleNum} order by commentNum desc) human ) 
+	 where rm between 1 and #{commentRow}
+	
+	</select>
+</mapper>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	

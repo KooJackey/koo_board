@@ -54,7 +54,7 @@ public class MemberController {
 			
 			String fileName=profile.getOriginalFilename();	
 			userInfo.setPicture(fileName);
-			File file = new File("D:/upload/profile/" + fileName);
+			File file = new File("c:/upload/profile/" + fileName);
             try {
 				profile.transferTo(file);
 			}  catch (IOException e) {

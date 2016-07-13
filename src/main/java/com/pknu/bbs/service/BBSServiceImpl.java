@@ -160,6 +160,7 @@ public class BBSServiceImpl implements BBSService {
 		if(fileStatus ==1){				
 			fileList=bbsDao.getFiles(articleNum);
 			mav.addObject("fileList", fileList);
+			System.out.println(mav.toString());
 		}		
 		mav.addObject("userInfo", bbsDao.userProfile(article.getId()));
 		mav.addObject("article", article);		

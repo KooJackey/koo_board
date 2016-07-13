@@ -198,6 +198,7 @@ public class BBSController {
 	@RequestMapping(value="/download.bbs")
 	@ResponseBody
 	public FileSystemResource download(HttpServletResponse res, String storedFname){	
+		System.out.println("download.bbs 요청 "+storedFname);
 		return bbsService.download(res, storedFname);
 	}
 	

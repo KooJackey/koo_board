@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -78,6 +79,20 @@
                         <div class="panel-body" style="position: 50%;">
                        		 <br/>
                        		<div style="min-height: 400px;">	<!-- 내용 들어갈 div -->
+                       		<c:if test="${article.fileStatus !=0}">
+							 <c:if test="${fileList!=null }">
+							 <ul>
+							  <c:forEach var="fileList" items="${fileList}">
+								<li>
+								<a  href="/bbs/download.bbs?storedFname=${fileList.storedFname}">${fn:substringAfter(fileList.storedFname, "_")}</a>
+							  	</li>
+								<li>
+								<img src="c:/upload${fileList.storedFname}">
+							  	</li>
+							  </c:forEach>
+							 </ul>
+							 </c:if>
+							</c:if>
                        		${article.content}
                        		</div>
 							<button id="1minddal">
@@ -104,7 +119,7 @@
 						    	  <td align="right">	    	
 						    	  <div class="btn-group">
 						    	  <c:if test="${id == article.id}">
-							    	  <input type="button" value="수정하기" class="btn btn-sm btn-primary" onclick="document.location.href='/bbs/updateForm.bbs?articleNum=${article.articleNum}&pageNum=${pageNum}&file=${article.fileStatus}'">
+							    	  <input type="button" value="수정하기" class="btn btn-sm btn-primary" onclick="document.location.href='/bbs/update.bbs?articleNum=${article.articleNum}&pageNum=${pageNum}&file=${article.fileStatus}'">
 							    	  <input type="button" value="삭제하기" class="btn btn-sm btn-primary" onclick="document.location.href='/bbs/delete.bbs?articleNum=${article.articleNum}&pageNum=${pageNum}'">
 						    	  </c:if>
 						    	  <c:if test="${id != article.id}">

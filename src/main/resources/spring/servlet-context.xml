@@ -34,10 +34,10 @@
 	</bean>	
 	
 	<bean id="saveDir" class="java.lang.String">
-		<constructor-arg value="d:\upload\"/>
+		<constructor-arg value="c:\upload\"/>
 	</bean>
 
-	<bean class="org.springframework.web.servlet.view.BeanNameViewResolver"/>	
+<!-- 	<bean class="org.springframework.web.servlet.view.BeanNameViewResolver"/>	 -->
 	
 	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
 	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">

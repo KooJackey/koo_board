@@ -38,7 +38,7 @@
 	<bean id="dataSource" class="org.apache.tomcat.dbcp.dbcp2.BasicDataSource"
 	  p:driverClassName="oracle.jdbc.driver.OracleDriver"
 	  p:url="jdbc:oracle:thin:@127.0.0.1:1521:XE"
-	  p:username="hr" p:password="1234"/>
+	  p:username="koo_blog" p:password="1234"/>
 
 	
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
@@ -53,11 +53,11 @@
 	</bean>
 	
 	<bean id="saveDir" class="java.lang.String">
-		<constructor-arg value="d:\upload\" />		
+		<constructor-arg value="c:\upload\" />		
 	</bean> 	
 	
 	<bean id="profileDir" class="java.lang.String">
-		<constructor-arg value="d:\upload\profile\" />		
+		<constructor-arg value="c:\upload\profile\" />		
 	</bean> 	
 	
 	<bean id="bbsDao" class="org.mybatis.spring.mapper.MapperFactoryBean">

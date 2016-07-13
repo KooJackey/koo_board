@@ -101,6 +101,7 @@ public class UploadController {
 						"attachment; filename=\""+ 
 						new String(fileName.getBytes("UTF-8"), 
 								"ISO-8859-1").replace("%20", "")+"\"");
+				headers.toString();
 			}
 			entity = new ResponseEntity<byte[]>(
 					IOUtils.toByteArray(in), 
